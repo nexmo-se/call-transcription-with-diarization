@@ -88,7 +88,7 @@ Launch the server application with the following command:<br>
 ```bash
 node call-transcription.cjs 
 ```
-Default local (not public!) `port` of either server application is: 8000.
+Default local (not public!) `port` of this server application is: 8000.
 
 
 

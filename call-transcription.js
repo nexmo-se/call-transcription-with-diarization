@@ -77,8 +77,6 @@ const vonage = new Vonage(credentials);
 
 const delayToFirstTts = process.env.DELAY_TO_FIRST_TTS; // in milliseconds
 
-//-- Vonage API - Call leg recording and post call transcription --
-
 const fs = require('fs');
 const axios = require('axios');
 
@@ -86,12 +84,6 @@ const appId = process.env.APP_ID; // used by tokenGenerate
 const privateKey = fs.readFileSync('./.private.key'); // used by tokenGenerate
 
 const { tokenGenerate } = require('@vonage/jwt');
-
-const jwt = require('jsonwebtoken');
-// const publicKey = fs.readFileSync('./public.pem'); // used by jwt verify
-
-// const apiBaseUrl = 'https://api-us.nexmo.com';
-const apiBaseUrl = 'https://api-us.vonage.com';
 
 //-- Deepgram API --
 
@@ -197,9 +189,9 @@ const { unlink } = require('node:fs/promises');
 async function deleteFile(path) {
   try {
     await unlink(path);
-    console.log(`Successfully deleted ${path}`);
+    console.log(`>>> Successfully deleted ${path}`);
   } catch (error) {
-    console.error(`Error deleting file: ${error.message}`);
+    console.error(`>>> Error deleting file: ${error.message}`);
   }
 }
 

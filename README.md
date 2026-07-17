@@ -48,7 +48,7 @@ For the next steps, you will need:</br>
 
 ### Set up your inbound SIP connection if needed
 
-If this server application is to handle incoming SIP calls (i.e. to the Vonage API platform), set up a Proogrammable SIP connection as follows:</br>
+If this server application is to handle incoming SIP calls (i.e. to the Vonage API platform), set up a Programmable SIP connection as follows:</br>
 access the [SIP web page](https://dashboard.vonage.com/sip-trunking),</br>
 click on *+ Create New*,</br>
 enter a unique domain name (no dots), e.g. "mysipdomain" (again, must be unique)</br>

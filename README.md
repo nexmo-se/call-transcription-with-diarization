@@ -67,7 +67,7 @@ _under Access Control List (ACL)_, you would enter the source IP address(es) or 
 make sure there is at least one entry in either sub-section,</br>
 click on *Back*,</br>
 you will see the 3 possible SIP domain URIs, select a SIP domain URI to use for your calling application, e.g. _*mysipdomain.sip-us.vonage.com*_,</br>
-for example, your calling application may call into the Vonage API platform by sending a SIP INVITE to the SIP URI 12995550101@mysipdomain.sip-us.vonage.com,</br>
+for example, your calling application may call into the Vonage API platform by sending a SIP INVITE to the SIP URI 12995551212@mysipdomain.sip-us.vonage.com,</br>
 the substring before the @ sign in the SIP URI will be handled or may be ignored by your Voice API application because the SIP calls will be always delivered to this application whatever is the value of that substring before @ sign.</br>
 
 ### Deployment

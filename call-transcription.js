@@ -122,7 +122,6 @@ function addInfoToPstnTracking(uuid) {
   pstnTracking[uuid]["calledNumber"] = null;
   pstnTracking[uuid]["allInfo"] = null;
   pstnTracking[uuid]["callerExt"] = null;
-  pstnTracking[uuid]["duplicateCall"] = false;
 }
 
 function deleteFromPstnTracking(uuid) {

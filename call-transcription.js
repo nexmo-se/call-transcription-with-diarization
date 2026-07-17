@@ -271,6 +271,8 @@ app.post('/answer', async(req, res) => {
 
   //--
 
+  let nccoResponse;
+
   if(!duplicateCall) {
 
     addInfoToPstnTracking(uuid);
@@ -283,7 +285,7 @@ app.post('/answer', async(req, res) => {
     pstnTracking[uuid]["callerExt"] = to.split('_')[0];
     //--
 
-    const nccoResponse = [
+    nccoResponse = [
       { 
         "action": "conversation",
         "startOnEnter": true,
@@ -299,7 +301,14 @@ app.post('/answer', async(req, res) => {
 
   } else {
 
-    res.status(200).send('Ok');
+    nccoResponse = [
+      { 
+        "action": "wait",
+        "timeout": 0.1
+      }
+    ];
+
+    res.status(200).json(nccoResponse);
 
   }  
 

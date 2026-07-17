@@ -62,9 +62,9 @@ in the following *Outbound Calling* is from your calling application/server "poi
 
 within *Outbound Calling* section / Authentication, click on *Add*,</br>
 use either or both _User Key and Secret_ or _Access Control List (ACL)_ fields,</br>
-under _User Key and Secret_, you would enter the SIP username and SIP password as used by the calling application, and click on same line *+* sign,</br>
-_under Access Control List (ACL)_, you would enter the source IP address(es) or range of source IP addresses (subnets),and click on same line *+* sign,</br>
-make sure there is at least one entry in either section,</br>
+under _User Key and Secret_, you would enter the SIP username and SIP password as used by the calling application, then click on same line *+* sign,</br>
+_under Access Control List (ACL)_, you would enter the source IP address(es) or range of source IP addresses (subnets), then click on same line *+* sign,</br>
+make sure there is at least one entry in either sub-section,</br>
 click on *Back*,</br>
 you will see the 3 possible SIP domain URIs, select a SIP domain URI to use for your calling application, e.g. _*mysipdomain.sip-us.vonage.com*_,</br>
 for example, your calling application may call into the Vonage API platform by sending a SIP INVITE to the SIP URI 12995550101@mysipdomain.sip-us.vonage.com,</br>

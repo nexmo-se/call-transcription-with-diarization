@@ -121,7 +121,7 @@ function addInfoToPstnTracking(uuid) {
   pstnTracking[uuid]["callerNumber"] = null;
   pstnTracking[uuid]["calledNumber"] = null;
   pstnTracking[uuid]["allInfo"] = null;
-  pstnTracking[uuid]["faExt"] = null;
+  pstnTracking[uuid]["callerExt"] = null;
   pstnTracking[uuid]["duplicateCall"] = false;
 }
 
@@ -203,24 +203,24 @@ console.log('\n>>> Service phone numbers:', process.env.SERVICE_PHONE_NUMBERS);
 
 // addInfoToPstnTracking('AAA');
 // pstnTracking['AAA']["calledNumber"] = '12995550101_metadata1';
-// pstnTracking['AAA']["faExt"] = pstnTracking['AAA']["calledNumber"].split('_')[0]
-// console.log('AAA FA ext:', pstnTracking['AAA']["faExt"] );
+// pstnTracking['AAA']["callerExt"] = pstnTracking['AAA']["calledNumber"].split('_')[0]
+// console.log('AAA Caller ext:', pstnTracking['AAA']["callerExt"] );
 
 // addInfoToPstnTracking('BBB');
 // pstnTracking['BBB']["calledNumber"] = '12995551212_metadata2';
-// pstnTracking['BBB']["faExt"] = pstnTracking['BBB']["calledNumber"].split('_')[0]
-// console.log('BBB FA ext:', pstnTracking['BBB']["faExt"] );
+// pstnTracking['BBB']["callerExt"] = pstnTracking['BBB']["calledNumber"].split('_')[0]
+// console.log('BBB Caller ext:', pstnTracking['BBB']["callerExt"] );
 
 // addInfoToPstnTracking('CCC');
 // pstnTracking['CCC']["calledNumber"] = '12995551313_metadata3';
-// pstnTracking['CCC']["faExt"] = pstnTracking['CCC']["calledNumber"].split('_')[0]
-// console.log('CCC FA ext:', pstnTracking['CCC']["faExt"] );
+// pstnTracking['CCC']["callerExt"] = pstnTracking['CCC']["calledNumber"].split('_')[0]
+// console.log('CCC Caller ext:', pstnTracking['CCC']["callerExt"] );
 
 // const someNewCallee = '12995551212_metadata4';
 
 // Object.keys(pstnTracking).forEach( key => {
-//   // console.log(key, 'FA ext', pstnTracking[key]["faExt"]);
-//   if (someNewCallee.split('_')[0] ==  pstnTracking[key]["faExt"]) {
+//   // console.log(key, 'Caller ext', pstnTracking[key]["callerExt"]);
+//   if (someNewCallee.split('_')[0] ==  pstnTracking[key]["callerExt"]) {
 //     console.log("there is a match!")
 //     // need to test also if call is still up (not "completed" state)
 //   }
@@ -239,20 +239,20 @@ app.post('/answer', async(req, res) => {
   const uuid = req.body.uuid;
   const from = req.body.from;
   const to = req.body.to;
-  const faExtension = to.split('_')[0];
+  const callerExtension = to.split('_')[0];
   let duplicateCall = false;
 
   console.log('\n>>> Incoming call\n' + JSON.stringify(req.body, null, 2));
 
   //--
 
-  // check if there is alreeady a pending live 3-way call from same FA
+  // check if there is alreeady a pending live 3-way call from same Caller extension
   for (const key of Object.keys(pstnTracking)) {  
-    if ( faExtension == pstnTracking[key]["faExt"]) {
+    if ( callerExtension == pstnTracking[key]["callerExt"]) {
 
       addInfoToPstnTracking(uuid);
       
-      console.log(">>> There is a live call already from FA ext", faExtension, 'this new call is rejected!');
+      console.log(">>> There is a live call already from same caller ext", callerExtension, 'this new call is rejected!');
     
       const otherCall = await vonage.voice.getCall(key);  // check if other call is still active or not
 
@@ -280,7 +280,7 @@ app.post('/answer', async(req, res) => {
     pstnTracking[uuid]["calledNumber"] = to;
     pstnTracking[uuid]["allInfo"] = req.body;
     pstnTracking[uuid]["token"] = null;
-    pstnTracking[uuid]["faExt"] = to.split('_')[0];
+    pstnTracking[uuid]["callerExt"] = to.split('_')[0];
     //--
 
     const nccoResponse = [

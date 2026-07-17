@@ -2,11 +2,11 @@
 
 ## What this application does
 
-This server application uses Vonage Voice API to handle a PSTN or SIP incoming call where there are two or more participants.
+This server application uses the Vonage Voice API to handle incoming PSTN or SIP calls involving two or more participants.
 
-After the call terminates it will post the conversation transcript with diarization, i.e. label transcripts corresponding to each speaker.
+Once the call concludes, the application generates and posts a conversation transcript complete with speaker diarization to accurately label each participant's dialogue.  
 
-It uses the Voice API ability to record a call, then post call submit the recorded audio to an ASR (Automatic Speech Recognition) engine for transcription, in this sample code using Deepgram ASR engine.
+This sample code uses the Voice API to record a call and then submits the recorded audio to the Deepgram ASR (Automatic Speech Recognition) engine for transcription.
 
 ## Set up
 

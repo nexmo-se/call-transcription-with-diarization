@@ -39,7 +39,7 @@ https://yyyyyyyy.ngrok.xxx/event</br></br>
 
 - If this application needs to receive calls only via SIP, there is no need to link a phone number to this application,
 
-Please take note of your **application ID** and **linked phone number** (if any), as they are needed in the very next section.
+Please take note of your **application ID** and **linked phone number** (if any), as they are needed in the *Deployment* section.
 
 For the next steps, you will need:</br>
 - Your [Vonage API key](https://dashboard.nexmo.com/settings) (as **`API_KEY`**)</br>

@@ -164,26 +164,22 @@ async function fileExists(path) {
 
 //===========================================================
 
-async function transcribeFile(recordingFile) {
+// async function transcribeFile(recordingFile) {
 
-  const result = await deepgram.listen.v1.media.transcribeFile(
-    createReadStream(recordingFile),
-    {
-      model: process.env.DEEPGRAM_STT_MODEL,
-      language: process.env.DEEPGRAM_STT_LANGUAGE,
-      smart_format: true,   // toggle this paremeter to see which value provides best results for your use case
-      diarize_model: "latest" // see https://developers.deepgram.com/reference/speech-to-text/listen-pre-recorded
-      // diarize: true  // deprecated paramater, you must NOT add this parameter
-    }
-  );
+//   const result = await deepgram.listen.v1.media.transcribeFile(
+//     createReadStream(recordingFile),
+//     {
+//       model: process.env.DEEPGRAM_STT_MODEL,
+//       language: process.env.DEEPGRAM_STT_LANGUAGE,
+//       smart_format: true,
+//       diarize_model: "latest" // see https://developers.deepgram.com/reference/speech-to-text/listen-pre-recorded
+//       // diarize: true  // deprecated paramater, you must NOT add this parameter
+//     }
+//   );
 
-  // debug info
-  // console.log('>>> Result:\n');
-  // console.dir(result, { depth: null, colors: true });
+//   return(result);
 
-  return(result);
-
-}
+// }
 
 //===========================================================
 
@@ -296,7 +292,23 @@ app.post('/answer', async(req, res) => {
         "name": "conf_" + uuid,
         "record": true,
         "eventUrl": [ "https://" + hostName + "/recordings" ],
-        "eventMethod": "POST"
+        "eventMethod": "POST",        
+        "transcription": {
+          "language": "en-US",
+          "eventUrl": [ "https://" + hostName + "/transcripts" ],
+          "eventMethod": "POST",
+          "provider": "deepgram",
+          "providerOptions": {
+          // "model": "nova-2",
+          // "model": "nova-2-phonecall",
+          "model": "nova-3",
+          "language": "en-US",
+          "smart_format": true,   // toggle this paremeter to see which value provides best results for your use case
+          "punctuate": true,
+          "diarize_model": "latest" // see https://developers.deepgram.com/reference/speech-to-text/listen-pre-recorded
+          // diarize: true  // deprecated paramater, you must NOT add this parameter
+          }
+        }
       }
     ];
 
@@ -401,65 +413,141 @@ app.post('/recordings', async(req, res) => {
 
   const callAudioRecordingFile = `./post-call-data/${audioRecordingFileBaseName}_call.mp3`;
 
+  // Comment this next line if there is no need to download recording files
   await vonage.voice.downloadRecording(req.body.recording_url, callAudioRecordingFile);
 
-  if (await fileExists(callAudioRecordingFile)) {
+  // if (await fileExists(callAudioRecordingFile)) {
 
-    const transcript = await transcribeFile(callAudioRecordingFile);
+  //   const transcript = await transcribeFile(callAudioRecordingFile);
 
-    const transcriptContent = transcript.results.channels[0].alternatives[0].paragraphs.transcript;
+  //   const transcriptContent = transcript.results.channels[0].alternatives[0].paragraphs.transcript;
 
-    const transcriptBuffer = Buffer.from(transcriptContent, 'utf-8');
-    const encodedTranscript = transcriptBuffer.toString('base64');
+  //   const transcriptBuffer = Buffer.from(transcriptContent, 'utf-8');
+  //   const encodedTranscript = transcriptBuffer.toString('base64');
 
-    const jsonPayload = {
-      start_time: startTime,
-      caller_number: callerNumber,
-      called_number: calledNumber,
-      all_info: pstnTracking[uuid]["allInfo"],
-      transcript: encodedTranscript
-    };
+  //   const jsonPayload = {
+  //     start_time: startTime,
+  //     caller_number: callerNumber,
+  //     called_number: calledNumber,
+  //     all_info: pstnTracking[uuid]["allInfo"],
+  //     transcript: encodedTranscript
+  //   };
 
-    const accessToken = tokenGenerate(appId, privateKey, {});
-    pstnTracking[uuid]["token"] = accessToken;
+  //   const accessToken = tokenGenerate(appId, privateKey, {});
+  //   pstnTracking[uuid]["token"] = accessToken;
 
-    //-- merge with metadata from remote application making the incoming SIP call --
+  //   //-- merge with metadata from remote application making the incoming SIP call --
 
-    // properties from remote application overwrite properties from jsonPayload in case of conflicts
-    const jsonMergedPayload = { ...jsonPayload, ...metadataIn[callerNumber] };
+  //   // properties from remote application overwrite properties from jsonPayload in case of conflicts
+  //   const jsonMergedPayload = { ...jsonPayload, ...metadataIn[callerNumber] };
 
-    console.log(">>> Posting JSON payload to originator server, caller number", callerNumber, "called number", calledNumber);
+  //   console.log(">>> Posting JSON payload to originator server, caller number", callerNumber, "called number", calledNumber);
 
-    // post JSON payload to remote storage server 
-    await axios.post('https://' + dropOffServerPath, 
-      jsonMergedPayload,
-      {
-        headers: {
-          "X-Vonage-Jwt": 'Bearer ' + pstnTracking[uuid]["token"],
-            "Content-Type": 'application/json'
-        }
-      })
-      .then(res => {
-        console.log('\n>>> JSON payload posted for call leg:', uuid);
-        deleteFromMetadata(callerNumber); // delete corresponding metadata tracking object
-      })
-      .catch(err => {
-        console.log('\n>>> Failed to post JSON payload for call leg', uuid, 'caller number', callerNumber);
-        console.log('>>> error code:', err.response.status, 'error reason:', err.response.statusText);
-        console.dir(err.response.headers, {depth: 2, colors: true});
-      })
+  //   // post JSON payload to remote storage server 
+  //   await axios.post('https://' + dropOffServerPath, 
+  //     jsonMergedPayload,
+  //     {
+  //       headers: {
+  //         "X-Vonage-Jwt": 'Bearer ' + pstnTracking[uuid]["token"],
+  //           "Content-Type": 'application/json'
+  //       }
+  //     })
+  //     .then(res => {
+  //       console.log('\n>>> JSON payload posted for call leg:', uuid);
+  //       deleteFromMetadata(callerNumber); // delete corresponding metadata tracking object
+  //     })
+  //     .catch(err => {
+  //       console.log('\n>>> Failed to post JSON payload for call leg', uuid, 'caller number', callerNumber);
+  //       console.log('>>> error code:', err.response.status, 'error reason:', err.response.statusText);
+  //       console.dir(err.response.headers, {depth: 2, colors: true});
+  //     })
 
-    //-- info related to this call is no longer needed 
-    deleteFromPstnTracking(uuid);
+  //   //-- info related to this call is no longer needed 
+  //   deleteFromPstnTracking(uuid);
 
-    //-- uncomment this next line if you want to keep the audio recording files for test purposes
-    deleteFile(callAudioRecordingFile);
+  //   //-- uncomment this next line if you want to keep the audio recording files for test purposes
+  //   deleteFile(callAudioRecordingFile);
 
-  };  
+  // };  
 
 });
 
-//------------
+//--------------
+
+app.post('/transcripts', async(req, res) => {
+
+  res.status(200).send('Ok');
+
+  const uuid = findUuidByNamedConfUuid(req.body.conversation_uuid);
+
+  console.log('\n>>> uuid:', uuid);
+  // console.log('\n>>> pstnTracking[uuid]:', pstnTracking[uuid]);
+
+  const startTime = pstnTracking[uuid]["startTime"];
+  const callerNumber = pstnTracking[uuid]["callerNumber"];
+  const calledNumber = pstnTracking[uuid]["calledNumber"];
+
+  const callTranscriptFileBaseName = startTime + '_' + callerNumber + '_' + calledNumber;
+
+  const callTranscriptFile = `./post-call-data/${callTranscriptFileBaseName}_call.txt`;
+
+  await vonage.voice.downloadTranscription(req.body.transcription_url, callTranscriptFile);
+
+  // if (await fileExists(callTranscriptFile)) {
+
+  //   const transcriptContent = await readFile(callTranscriptFile, 'utf8');
+
+  //   const transcriptBuffer = Buffer.from(transcriptContent, 'utf-8');
+  //   const encodedTranscript = transcriptBuffer.toString('base64');
+
+  //   const jsonPayload = {
+  //     start_time: startTime,
+  //     caller_number: callerNumber,
+  //     called_number: calledNumber,
+  //     all_info: pstnTracking[uuid]["allInfo"],
+  //     transcript: encodedTranscript
+  //   };
+
+  //   const accessToken = tokenGenerate(appId, privateKey, {});
+  //   pstnTracking[uuid]["token"] = accessToken;
+
+  //   //-- merge with metadata from remote application making the incoming SIP call --
+
+  //   // properties from remote application overwrite properties from jsonPayload in case of conflicts
+  //   const jsonMergedPayload = { ...jsonPayload, ...metadataIn[callerNumber] };
+
+  //   console.log(">>> Posting JSON payload to originator server, caller number", callerNumber, "called number", calledNumber);
+
+  //   // post JSON payload to remote storage server 
+  //   await axios.post('https://' + dropOffServerPath, 
+  //     jsonMergedPayload,
+  //     {
+  //       headers: {
+  //         "X-Vonage-Jwt": 'Bearer ' + pstnTracking[uuid]["token"],
+  //           "Content-Type": 'application/json'
+  //       }
+  //     })
+  //     .then(res => {
+  //       console.log('\n>>> JSON payload posted for call leg:', uuid);
+  //       deleteFromMetadata(callerNumber); // delete corresponding metadata tracking object
+  //     })
+  //     .catch(err => {
+  //       console.log('\n>>> Failed to post JSON payload for call leg', uuid, 'caller number', callerNumber);
+  //       console.log('>>> error code:', err.response.status, 'error reason:', err.response.statusText);
+  //       console.dir(err.response.headers, {depth: 2, colors: true});
+  //     })
+
+  //   //-- info related to this call is no longer needed 
+  //   deleteFromPstnTracking(uuid);
+
+  //   //-- uncomment this next line if you want to keep the transcripts files for test purposes
+  //   deleteFile(callTranscriptFile);
+
+  // };  
+
+});
+
+//-----------
 
 app.post('/dropoff', async(req, res) => {
 

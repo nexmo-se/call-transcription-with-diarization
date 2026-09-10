@@ -25,7 +25,7 @@ app.use(function (req, res, next) {
   next();
 });
 
-//---- read file asynchronously ---
+//---- Read file asynchronously ---
 
 async function readFile(file) {
   try {
@@ -36,7 +36,7 @@ async function readFile(file) {
   }
 }
 
-//---- keep alive the VCR server ----
+//---- Keep alive the VCR server ----
 
 if (process.env.VCR_PORT) {   // is this application running on VCR?
 
@@ -85,26 +85,10 @@ const privateKey = fs.readFileSync('./.private.key'); // used by tokenGenerate
 
 const { tokenGenerate } = require('@vonage/jwt');
 
-//-- Deepgram API --
+//----  When to delete call tracking info after call terminates, in milliseconds ---
+const delayToDeleteCallTrackingInfo = process.env.DELAY_TO_DELETE_CALL_TRACKING_INFO;
 
-//- Deepgram SDK v 4.x
-// const { createClient } = require("@deepgram/sdk");
-// const deepgram = createClient(process.env.DEEPGRAM_API_KEY);
-// const dgApiKey = process.env.DEEPGRAM_API_KEY;
-
-//- Deepgram SDK v 5.x
-const { createReadStream } = require("fs");
-const { DeepgramClient } = require("@deepgram/sdk");
-// Initialize client (reads DEEPGRAM_API_KEY from environment variables)
-const deepgram = new DeepgramClient();
-
-const dgSessionLanguageCode = process.env.DEEPGRAM_STT_LANGUAGE;
-const dgSessionModel = process.env.DEEPGRAM_STT_MODEL;
-
-//---- Connector server or AI provider server ----
-const processorServer = process.env.PROCESSOR_SERVER;
-
-//----  Drop-off server host name and path for consent audio recording and conversation transcript ----
+//----  Drop-off server host name and path for conversation transcript ----
 const dropOffServerPath = process.env.DROP_OFF_SERVER_PATH;
 
 //---- SIP call info tracking ----
@@ -161,25 +145,6 @@ async function fileExists(path) {
     return false;
   }
 }
-
-//===========================================================
-
-// async function transcribeFile(recordingFile) {
-
-//   const result = await deepgram.listen.v1.media.transcribeFile(
-//     createReadStream(recordingFile),
-//     {
-//       model: process.env.DEEPGRAM_STT_MODEL,
-//       language: process.env.DEEPGRAM_STT_LANGUAGE,
-//       smart_format: true,
-//       diarize_model: "latest" // see https://developers.deepgram.com/reference/speech-to-text/listen-pre-recorded
-//       // diarize: true  // deprecated paramater, you must NOT add this parameter
-//     }
-//   );
-
-//   return(result);
-
-// }
 
 //===========================================================
 
@@ -245,7 +210,7 @@ app.post('/answer', async(req, res) => {
 
   //--
 
-  // check if there is alreeady a pending live 3-way call from same Caller extension
+  // check if there is already a pending live 3-way call from same Caller extension
   for (const key of Object.keys(pstnTracking)) {  
     if ( callerExtension == pstnTracking[key]["callerExt"]) {
 
@@ -299,14 +264,11 @@ app.post('/answer', async(req, res) => {
           "eventMethod": "POST",
           "provider": "deepgram",
           "providerOptions": {
-          // "model": "nova-2",
-          // "model": "nova-2-phonecall",
           "model": "nova-3",
           "language": "en-US",
           "smart_format": true,   // toggle this paremeter to see which value provides best results for your use case
           "punctuate": true,
           "diarize_model": "latest" // see https://developers.deepgram.com/reference/speech-to-text/listen-pre-recorded
-          // diarize: true  // deprecated paramater, you must NOT add this parameter
           }
         }
       }
@@ -355,7 +317,7 @@ app.post('/event', async(req, res) => {
 
         if (call.status === 'answered') {
 
-          //-- ask consent --
+          //-- play announcement --
           vonage.voice.playTTS(uuid,  
           {
             text: 'This call is going to be transcribed for quality purposes.', // change this TTS text as needed for your use case
@@ -385,7 +347,7 @@ app.post('/event', async(req, res) => {
       // this is also done in /recordings route
       deleteFromPstnTracking(uuid);
 
-    }, 30000)
+    }, delayToDeleteCallTrackingInfo)
     
     console.log('\n>>> SIP call', uuid, 'has terminated');
 
@@ -547,7 +509,8 @@ app.post('/transcripts', async(req, res) => {
 
 });
 
-//-----------
+//---- just use as a local "dropoff" server location for quick tests ----
+//---- you should have your own "dropoff" server location ----
 
 app.post('/dropoff', async(req, res) => {
 

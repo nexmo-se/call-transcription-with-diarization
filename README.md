@@ -70,6 +70,20 @@ you will see the 3 possible SIP domain URIs, your calling application will use o
 for example, your calling application may call into the Vonage API platform by sending a SIP INVITE to the SIP URI 12995551212@mysipdomain.sip-us.vonage.com,</br>
 the substring before the @ sign in the SIP URI will be handled or may be ignored by your Voice API application because the SIP calls will be always delivered to this application whatever is the value of that substring before @ sign.</br>
 
+### Solution choices
+
+There are two solution choices.
+
+#### First solution choice
+
+Your application uses the Vonage Voice API's native capability to do post-call transcription with diarization.</br>
+There is no need to open an account with an ASR provider.
+
+#### Alternate solution choice
+
+Your application submits the call audio recording to the STT/ASR (Speech-to-Text/Automatic Speech Recognition) provider for transcription with diarization.</br>
+That requires your company to open an account with the ASR provider and enter the credentials (in .env file).
+
 ### Deployment
 
 Have Node.js installed on your system, this application has been tested with Node.js version 22.16<br>
@@ -84,13 +98,24 @@ Install node modules with the command:<br>
 npm install
 ```
 
-Launch the server application with the following command:<br>
+Launch the server application with either of the following command:<br><br>
+
+First solution choice
+```bash
+node call-transcription-native-dg.cjs 
+```
+
+Alternate solution choice
 ```bash
 node call-transcription.cjs 
 ```
+
 Default local (not public!) `port` of this server application is: 8000.
 
+### Call Transcription Results
 
+Post call transcription with diarization will be under this server folder _post-call-data_.<br>
+This server folder is generally not meant to be a file storage server, so make sure to delete the files in that folder after necessary processing.<br>
 
 
 

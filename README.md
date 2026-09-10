@@ -77,7 +77,7 @@ There are two solution choices.
 #### First solution choice
 
 Your application uses the Vonage Voice API's native capability to do post-call transcription with diarization.</br>
-There is no need to open an account with an ASR provider.
+There is no need to open an account with an STT/ASR provider.
 
 #### Alternate solution choice
 
@@ -98,7 +98,7 @@ Install node modules with the command:<br>
 npm install
 ```
 
-Launch the server application with either of the following command:<br><br>
+Launch the server application with either of the following command:<br>
 
 First solution choice
 ```bash

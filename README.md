@@ -98,7 +98,7 @@ Install node modules with the command:<br>
 npm install
 ```
 
-Launch the server application with either of the following command:<br>
+<br>Launch the server application with either of the following command:<br>
 
 First solution choice
 ```bash
@@ -114,7 +114,7 @@ Default local (not public!) `port` of this server application is: 8000.
 
 ### Call Transcription Results
 
-Post call transcription with diarization will be under this server folder _post-call-data_.<br>
+Post call transcription with diarization will be under the server folder _post-call-data_.<br>
 This server folder is generally not meant to be a file storage server, so make sure to delete the files in that folder after necessary processing.<br>
 
 
